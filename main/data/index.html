@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UVR MDAQ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="uvrlogo.png">
+  
+  <link id="theme" rel="stylesheet" type="text/css" href="light.css" />
+</head>
+<body>
+  <div class="topnav">
+    <h1>UVR Mobile DAQ</h1>  
+  </div>
+  <div class=""tab">
+    <button class="tablinks" onclick="openTab(event,'Live/Log')" id="defaultOpen">Live/Log</button>
+    <button class="tablinks" onclick="openTab(event,'Config')">Configuration</button>
+  </div>
+  <div id="Live/Log" class="tabcontent">
+    <button id="logDAQ" onclick="startLogging(this)">Log Now</button>
+    <div class="content">
+      <div class="cards">
+        <div class="card">
+          <p class="card-title">System Status</p>
+          <p><span class="reading">DAQ Status: <span id="daqstate">%DAQSTATE%</span></span></p>
+          <p><span class="reading">SDCard Status: <span id="sdstate">%SDSTATE%</span></span></p>
+        </div>
+        <div class="card">
+          <p class="card-title">Live Data</p>
+          <p><span class="reading">Force: <span id="load">%LOAD%</span> N</span></p>
+          <p><span class="reading">Temp: <span id="temp">%TEMP%</span> &deg;C</span></p>
+          <p><span class="reading">Pressure: <span id="pres">%PRESSURE%</span> PSI</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="Config" class="tabcontent">
+    <button id="sdInitialize" onclick="sdInitialize(this)">Re-Initialize SD</button>
+    <div class="content">
+      <div class="cards">
+        <div class="card">
+          <p class="card-title">Load Cell Config</p>
+          <button id="tareLoad" onclick="tareLoad(this)">Tare Load Cell</button>
+          <button id="reverseLoad" onclick="reverseLoad(this)">Flip Load Cell (+/-)</button>
+          <hr>
+          <input type="text" id="calibWeight"  value="[kg]" />
+          <br/>
+          <button onclick="calibWeight('calibWeight')" id="calibButton" >Calibrate Weight</button>
+          <p><span class="reading">HX711 Status: <span id="hx711State">%HX711STATE%</span></span></p>
+        </div>
+        <div class="card">
+          <p class="card-title">Thermocouple Config</p>
+          
+        </div>
+        <div class="card">
+          <p class="card-title">Pressure Config</p>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+  <button onclick="myFunction()">Toggle dark mode</button>
+
+  <!--https://randomnerdtutorials.com/esp32-bme680-web-server-arduino/-->
+  <script>
+  function myFunction() {
+    // Obtains an array of all <link>
+    // elements.
+    // Select your element using indexing.
+    var theme = document.getElementsByTagName('link')[1];
+  
+    // Change the value of href attribute 
+    // to change the css sheet.
+    if (theme.getAttribute('href') == 'light.css') {
+      theme.setAttribute('href', 'dark.css');
+    } else {
+      theme.setAttribute('href', 'light.css');
+    }
+  }
+  
+  if (!!window.EventSource) {
+    var source = new EventSource('/events');
+     
+    source.addEventListener('open', function(e) { // listening for messages from the server with addEventListener()
+      console.log("Events Connected");
+    }, false);
+    
+    source.addEventListener('error', function(e) {
+      if (e.target.readyState != EventSource.OPEN) {
+        console.log("Events Disconnected");
+      }
+    }, false);
+     
+    source.addEventListener('message', function(e) {
+      console.log("message", e.data);
+    }, false);
+     
+    source.addEventListener('daqstate', function(e) { //esp32 sends event systemstatus to server
+      console.log("daqstate", e.data); // 
+      document.getElementById("daqstate").innerHTML = e.data; // put the received data into the corresponding HTML elements on the web page
+    }, false);
+     
+    source.addEventListener('sdstate', function(e) {
+      console.log("sdstate", e.data);
+      document.getElementById("sdstate").innerHTML = e.data;
+    }, false);
+     
+    source.addEventListener('loadcell', function(e) {
+      console.log("loadcell", e.data);
+      document.getElementById("load").innerHTML = e.data;
+    }, false);
+     
+    source.addEventListener('temperature', function(e) {
+      console.log("temperature", e.data);
+      document.getElementById("temp").innerHTML = e.data;
+    }, false);
+
+    source.addEventListener('pressure', function(e) {
+      console.log("pressure", e.data);
+      document.getElementById("pres").innerHTML = e.data;
+    }, false);
+    source.addEventListener('hx711State', function(e) {
+      console.log("hx711State", e.data);
+      document.getElementById("hx711State").innerHTML = e.data;
+    }, false);
+  }
+  function startLogging(element){
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "/"+element.id, true);
+  console.log(element.id);
+  xhr.send();
+  }
+  function sdInitialize(element){
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "/"+element.id, true);
+  console.log(element.id);
+  xhr.send();
+  }
+  
+  function tareLoad(element){
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "/"+element.id, true);
+  console.log(element.id);
+  xhr.send();
+  }
+  function reverseLoad(element){
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "/"+element.id, true);
+  console.log(element.id);
+  xhr.send();
+  }
+  function calibWeight(id) {
+    var value = document.getElementById(id).value;
+    //alert(value);
+    xhr.open("GET", "/"+element.id, true);
+    console.log(element.id);
+    xhr.send();
+}
+
+  function openTab(evt, tabContent) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(tabContent).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+document.getElementById("defaultOpen").click();
+  </script>
+  
+  <!-- TODO: add button to download data over webserver to user -->
+</body>
+</html>
