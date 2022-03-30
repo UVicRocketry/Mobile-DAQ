@@ -34,3 +34,8 @@ Connect all sensors and configure if required. When ready to log, press "Log".
 3. MAX31855
 4. 18650
 5. Adafruit 5v Micro SD Card
+
+
+git add filename
+git commit -m "Comment"
+git push
