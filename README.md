@@ -23,7 +23,7 @@ In the configuration tab you can setup each sensor as well as re-mount the SD ca
 
 ## USE
 
-When powered on the DAQ should be left on during the entire duration of testing as connecting to the access point can take up to 60 seconds.
+Once powered on, the DAQ should be left on during the entire duration of testing as connecting to the access point can take up to 60 seconds.
 
 Connect all sensors and configure if required. When ready to log, press "Log".
 
